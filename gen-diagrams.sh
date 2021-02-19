@@ -12,7 +12,6 @@ umldiagram --src=./dist/swagger/account-info-swagger.yaml --dir=uml-diagrams\
 	--schema=OBReadStandingOrder6\
 	--schema=OBReadProduct2\
 	--schema=OBBCAData1\
-	--schema=OBBCAData1\
 	--schema=OBPCAData1\
 	--schema=OBReadOffer1\
 	--schema=OBParty2\
@@ -20,10 +19,10 @@ umldiagram --src=./dist/swagger/account-info-swagger.yaml --dir=uml-diagrams\
 	--schema=OBReadParty3\
 	--schema=OBReadScheduledPayment3\
 	--schema=OBBCAData1.properties.Overdraft\
-	# --schema=OBBCAData1.OtherFeesCharges\ # fix nested objects
-	# --schema=Overdraft.OverdraftTierBandSet\ # fix nested objects
-	# --schema=LoanInterest\
-	# --schema=Repayment\
+	--schema=OBBCAData1.properties.OtherFeesCharges\
+	--schema=OBBCAData1.properties.Overdraft.properties.OverdraftTierBandSet\
+	--schema=LoanInterest\
+	--schema=Repayment\
 
 umldiagram --src=./dist/swagger/payment-initiation-swagger.yaml --dir=uml-diagrams\
 	--schema=OBRisk1\
@@ -66,19 +65,19 @@ umldiagram --src=./dist/swagger/payment-initiation-swagger.yaml --dir=uml-diagra
 	--schema=OBWriteFile2\
 	--schema=OBWriteFileResponse3\
 	--schema=OBWritePaymentDetailsResponse1\
-	# --schema=OBWritePaymentDetails1\
-	# --schema=OBDomesticRefundAccount1\
-	# --schema=OBInternationalRefundAccount1\
-	# --schema=OBDomesticScheduled2\
-	# --schema=OBDomesticStandingOrder3\
-	# --schema=OBInternational3\
-	# --schema=OBExchangeRate2\
-	# --schema=OBInternationalScheduled3\
-	# --schema=OBInternationalStandingOrder4\
-	# --schema=OBFile2\
-	# --schema=OBAuthorisation1\
-	# --schema=OBMultiAuthorisation1\
-	# --schema=OBDomestic2\
+	--schema=OBWritePaymentDetails1\
+	--schema=OBDomesticRefundAccount1\
+	--schema=OBInternationalRefundAccount1\
+	--schema=OBDomesticScheduled2\
+	--schema=OBDomesticStandingOrder3\
+	--schema=OBInternational3\
+	--schema=OBExchangeRate2\
+	--schema=OBInternationalScheduled3\
+	--schema=OBInternationalStandingOrder4\
+	--schema=OBFile2\
+	--schema=OBAuthorisation1\
+	--schema=OBMultiAuthorisation1\
+	--schema=OBDomestic2\
 
 umldiagram --src=./dist/swagger/confirmation-funds-swagger.yaml --dir=uml-diagrams\
 	--schema=OBFundsConfirmationConsent1\
