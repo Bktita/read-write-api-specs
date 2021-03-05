@@ -2410,6 +2410,79 @@ definitions:
     type: string
     minLength: 1
     maxLength: 140
+  OBAuthorisation1:
+    type: object
+    additionalProperties: false
+    required:
+      - AuthorisationType
+    description: The authorisation type request from the TPP.
+    properties:
+      AuthorisationType:
+        $ref: '#/definitions/OBExternalAuthorisation1Code'
+      CompletionDateTime:
+        description: >-
+          Date and time at which the requested authorisation flow must
+          be completed.All dates in the JSON payloads are represented in
+          ISO 8601 date-time format. 
+
+          All date-time fields in responses must include the timezone.
+          An example is below:
+
+          2017-04-05T10:43:07+00:00
+        type: string
+        format: date-time
+  OBExternalAuthorisation1Code:
+    type: string
+    description: Type of authorisation flow requested.
+    enum:
+      - Any
+      - Single
+  OBMultiAuthorisation1:
+    type: object
+    additionalProperties: false
+    required:
+      - Status
+    description: The multiple authorisation flow response from the ASPSP.
+    properties:
+      Status:
+        description: Specifies the status of the authorisation flow in code form.
+        type: string
+        enum:
+          - Authorised
+          - AwaitingFurtherAuthorisation
+          - Rejected
+      NumberRequired:
+        description: >-
+          Number of authorisations required for payment order (total
+          required at the start of the multi authorisation journey).
+        type: integer
+      NumberReceived:
+        description: Number of authorisations received.
+        type: integer
+      LastUpdateDateTime:
+        description: >-
+          Last date and time at the authorisation flow was updated.All
+          dates in the JSON payloads are represented in ISO 8601
+          date-time format. 
+
+          All date-time fields in responses must include the timezone.
+          An example is below:
+
+          2017-04-05T10:43:07+00:00
+        type: string
+        format: date-time
+      ExpirationDateTime:
+        description: >-
+          Date and time at which the requested authorisation flow must
+          be completed.All dates in the JSON payloads are represented in
+          ISO 8601 date-time format. 
+
+          All date-time fields in responses must include the timezone.
+          An example is below:
+
+          2017-04-05T10:43:07+00:00
+        type: string
+        format: date-time
   OBActiveCurrencyAndAmount_SimpleType:
     description: >-
       A number of monetary units specified in an active currency where the unit
@@ -2440,6 +2513,23 @@ definitions:
       - Postal
       - Residential
       - Statement
+  OBCharge2:
+    type: object
+    additionalProperties: false
+    description: >-
+      Set of elements used to provide details of a charge for the
+      payment initiation.
+    required:
+      - ChargeBearer
+      - Type
+      - Amount
+    properties:
+      ChargeBearer:
+        $ref: '#/definitions/OBChargeBearerType1Code'
+      Type:
+        $ref: '#/definitions/OBExternalPaymentChargeType1Code'
+      Amount:
+        $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
   OBChargeBearerType1Code:
     description: >-
       Specifies which party/parties will bear the charges associated with the
@@ -2452,24 +2542,34 @@ definitions:
       - Shared
   OBCashAccountCreditor3:
     type: object
-    properties:
-      SchemeName:
-        $ref: '#/definitions/OBExternalAccountIdentification4Code'
-      Identification:
-        type: string
-        description: Identification assigned by an institution to identify an account. This identification is known by the account owner.
-        maxLength: 256
-      Name:
-        type: string
-        description: 'Name of the account, as assigned by the account servicing institution.  Usage The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.'
-      SecondaryIdentification:
-        type: string
-        description: 'Secondary identification of the account, as assigned by the account servicing institution. This can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).'
-        maxLength: 34
+    additionalProperties: false
     required:
       - SchemeName
       - Identification
       - Name
+    description: Provides the details to identify an account.
+    properties:
+      SchemeName:
+        $ref: '#/definitions/OBExternalAccountIdentification4Code'
+      Identification:
+        $ref: '#/definitions/Identification_0'
+      Name:
+        description: >-
+          Name of the account, as assigned by the account servicing
+          institution.
+
+          Usage: The account name is the name or names of the
+          account owner(s) represented at an account level. The
+          account name is not the product name or the nickname of
+          the account.
+
+          OB: ASPSPs may carry out name validation for Confirmation
+          of Payee, but it is not mandatory.
+        type: string
+        minLength: 1
+        maxLength: 350
+      SecondaryIdentification:
+        $ref: '#/definitions/SecondaryIdentification'
   OBCashAccountDebtor4:
     type: object
     description: ^
@@ -2491,7 +2591,17 @@ definitions:
         type: string
         description: ^
           This is secondary identification of the account, as assigned by the account servicing institution.  This can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination) | Max34Text
-
+  OBDomesticRefundAccount1:
+    type: object
+    additionalProperties: false
+    required:
+      - Account
+    description: >-
+      Unambiguous identification of the refund account to which a refund
+      will be made as a result of the transaction.
+    properties:
+      Account:
+        $ref: '#/definitions/OBCashAccountCreditor3'
   OBError1:
     type: object
     additionalProperties: false
@@ -3268,22 +3378,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -3614,22 +3709,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -4390,22 +4470,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -4749,22 +4814,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -5636,22 +5686,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -6035,22 +6070,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -6725,22 +6745,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -6963,22 +6968,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -7914,22 +7904,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           ExchangeRateInformation:
             type: object
             additionalProperties: false
@@ -8446,22 +8421,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           ExchangeRateInformation:
             type: object
             additionalProperties: false
@@ -9599,22 +9559,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           ExchangeRateInformation:
             type: object
             additionalProperties: false
@@ -10145,22 +10090,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           ExchangeRateInformation:
             type: object
             additionalProperties: false
@@ -11274,22 +11204,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
@@ -11740,22 +11655,7 @@ definitions:
           Charges:
             type: array
             items:
-              type: object
-              additionalProperties: false
-              description: >-
-                Set of elements used to provide details of a charge for the
-                payment initiation.
-              required:
-                - ChargeBearer
-                - Type
-                - Amount
-              properties:
-                ChargeBearer:
-                  $ref: '#/definitions/OBChargeBearerType1Code'
-                Type:
-                  $ref: '#/definitions/OBExternalPaymentChargeType1Code'
-                Amount:
-                  $ref: '#/definitions/OBActiveOrHistoricCurrencyAndAmount'
+              $ref: '#/definitions/OBCharge2'
           Initiation:
             type: object
             additionalProperties: false
